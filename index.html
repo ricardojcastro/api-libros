@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API de Libros — Documentación</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:     #0f0e0c;
+    --paper:   #f7f4ee;
+    --cream:   #ede9df;
+    --accent:  #c84b2f;
+    --gold:    #b8860b;
+    --muted:   #6b6560;
+    --border:  #d4cfc4;
+    --get:     #2d6a4f;
+    --get-bg:  #d8f3dc;
+    --code-bg: #1a1917;
+    --code-fg: #e8e0d0;
+    --mono: 'JetBrains Mono', monospace;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 400;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 3rem;
+    position: sticky;
+    top: 0;
+    background: rgba(247, 244, 238, 0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.4); opacity: 0.7; }
+  }
+
+  nav { display: flex; gap: 2rem; }
+  nav a {
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 500;
+  }
+  nav a:hover { color: var(--ink); }
+
+  .badge-version {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 7rem 3rem 5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.8;
+    max-width: 420px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 11px 24px;
+    border: none;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--accent); transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    padding: 10px 24px;
+    border: 1px solid var(--border);
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: var(--cream); }
+
+  /* ── HERO TERMINAL ── */
+  .hero-terminal {
+    background: var(--code-bg);
+    border: 1px solid #2e2c28;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 20px 30px 60px rgba(0,0,0,0.18);
+    transform: perspective(800px) rotateY(-4deg) rotateX(2deg);
+    transition: transform 0.4s ease;
+  }
+  .hero-terminal:hover { transform: perspective(800px) rotateY(0deg) rotateX(0deg); }
+
+  .terminal-bar {
+    background: #252320;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #2e2c28;
+  }
+  .t-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .t-dot.r { background: #ff5f57; }
+  .t-dot.y { background: #febc2e; }
+  .t-dot.g { background: #28c840; }
+  .terminal-title {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: #666;
+    margin-left: auto;
+    margin-right: auto;
+    letter-spacing: 0.04em;
+  }
+
+  .terminal-body {
+    padding: 1.4rem 1.6rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    line-height: 2;
+    color: var(--code-fg);
+  }
+
+  .t-prompt { color: #888; }
+  .t-cmd { color: #98c379; }
+  .t-output { color: #abb2bf; }
+  .t-key { color: #e5c07b; }
+  .t-str { color: #98c379; }
+  .t-num { color: #d19a66; }
+  .t-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 14px;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+  /* ── STATS ROW ── */
+  .stats {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--cream);
+  }
+  .stats-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 3rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .stat {
+    padding: 2rem 0;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 5rem 3rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 5rem;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar { position: sticky; top: 90px; height: fit-content; }
+  .sidebar-section { margin-bottom: 2rem; }
+  .sidebar-heading {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+  }
+  .sidebar ul { list-style: none; }
+  .sidebar ul li { margin-bottom: 2px; }
+  .sidebar ul li a {
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    transition: color 0.2s;
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+  }
+  .sidebar ul li a:hover,
+  .sidebar ul li a.active { color: var(--ink); border-left-color: var(--accent); }
+  .method-pill {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    background: var(--get-bg);
+    color: var(--get);
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* ── ENDPOINT SECTIONS ── */
+  .section-title {
+    font-family: var(--serif);
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+    padding-top: 2rem;
+  }
+  .section-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 3rem;
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  .endpoint-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .endpoint-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+
+  .endpoint-header {
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .endpoint-header.open { border-bottom-color: var(--border); }
+
+  .method-badge {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 3px;
+    background: var(--get-bg);
+    color: var(--get);
+    min-width: 44px;
+    text-align: center;
+    letter-spacing: 0.04em;
+  }
+
+  .endpoint-path {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--ink);
+    flex: 1;
+  }
+
+  .endpoint-summary {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .endpoint-toggle {
+    font-size: 0.75rem;
+    color: var(--muted);
+    transition: transform 0.2s;
+  }
+  .endpoint-toggle.open { transform: rotate(180deg); }
+
+  .endpoint-body {
+    display: none;
+    padding: 1.5rem;
+    background: #fdfcfa;
+  }
+  .endpoint-body.open { display: block; }
+
+  .body-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  .sub-heading {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+  }
+
+  /* Params table */
+  .params-table { width: 100%; border-collapse: collapse; }
+  .params-table th {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .params-table td {
+    font-size: 0.82rem;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--cream);
+    vertical-align: top;
+  }
+  .params-table td:first-child { font-family: var(--mono); font-size: 0.78rem; color: var(--accent); }
+  .param-type {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--get);
+    background: var(--get-bg);
+    padding: 1px 5px;
+    border-radius: 2px;
+  }
+  .param-req {
+    font-size: 0.68rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .param-opt { font-size: 0.68rem; color: var(--muted); }
+
+  /* Code block */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #2e2c28;
+  }
+  .code-header {
+    background: #252320;
+    padding: 7px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .code-lang {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: #666;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .copy-code {
+    background: none;
+    border: 1px solid #3a3834;
+    color: #888;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .copy-code:hover { color: var(--code-fg); border-color: #555; }
+
+  pre {
+    padding: 1rem 1.2rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--code-fg);
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  .json-key { color: #e5c07b; }
+  .json-str { color: #98c379; }
+  .json-num { color: #d19a66; }
+  .json-bool { color: #56b6c2; }
+  .json-null { color: #c678dd; }
+  .json-punc { color: #abb2bf; }
+
+  /* Responses */
+  .response-list { list-style: none; }
+  .response-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--cream);
+    font-size: 0.83rem;
+  }
+  .response-list li:last-child { border-bottom: none; }
+  .status-code {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 2px;
+    min-width: 38px;
+    text-align: center;
+  }
+  .status-200 { background: var(--get-bg); color: var(--get); }
+  .status-400 { background: #fff3cd; color: #856404; }
+  .status-404 { background: #fce8e6; color: var(--accent); }
+
+  /* ── TRY IT ── */
+  .try-section {
+    margin-top: 4rem;
+    padding: 3rem;
+    background: var(--ink);
+    border-radius: 6px;
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .try-section::before {
+    content: 'LIVE';
+    position: absolute;
+    top: 1.5rem;
+    right: 2rem;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 8px;
+  }
+
+  .try-title {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--paper);
+  }
+
+  .try-desc {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .try-form { display: flex; gap: 0; }
+  .try-input {
+    flex: 1;
+    background: #1a1917;
+    border: 1px solid #3a3834;
+    color: var(--code-fg);
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    outline: none;
+    border-radius: 3px 0 0 3px;
+  }
+  .try-input:focus { border-color: #555; }
+  .try-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 0 3px 3px 0;
+    transition: background 0.2s;
+  }
+  .try-btn:hover { background: #a83d24; }
+
+  .try-quick { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .quick-btn {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    background: #1a1917;
+    border: 1px solid #3a3834;
+    color: #888;
+    padding: 4px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .quick-btn:hover { color: var(--code-fg); border-color: #555; }
+
+  .try-result {
+    margin-top: 1.2rem;
+    background: #1a1917;
+    border: 1px solid #2e2c28;
+    border-radius: 4px;
+    overflow: hidden;
+    display: none;
+  }
+  .try-result.show { display: block; }
+  .result-header {
+    background: #252320;
+    padding: 7px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: #666;
+  }
+  .result-status {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--cream);
+  }
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-brand {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .footer-text {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .footer-tech {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .tech-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 3px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeIn 0.6s ease forwards;
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in:nth-child(1) { animation-delay: 0.1s; }
+  .fade-in:nth-child(2) { animation-delay: 0.2s; }
+  .fade-in:nth-child(3) { animation-delay: 0.3s; }
+  .fade-in:nth-child(4) { animation-delay: 0.4s; }
+
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; padding: 3rem 1.5rem; }
+    .hero-terminal { transform: none; }
+    .stats-inner { grid-template-columns: repeat(2, 1fr); }
+    .content { grid-template-columns: 1fr; padding: 3rem 1.5rem; }
+    .sidebar { display: none; }
+    .body-grid { grid-template-columns: 1fr; }
+    header { padding: 0 1.5rem; }
+    nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <span class="logo-dot"></span>
+      API de Libros
+    </a>
+    <nav>
+      <a href="#endpoints">Endpoints</a>
+      <a href="#pruebas">Pruebas</a>
+    </nav>
+    <span class="badge-version">v1.0.0</span>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="fade-in">
+    <div class="hero-eyebrow">REST API · Node.js · Express</div>
+    <h1>API de<br><em>Libros</em><br>en línea</h1>
+    <p class="hero-desc">
+      Una API REST sencilla para gestionar un catálogo de libros.
+      Construida con Node.js y Express, desplegada en Render. Tres endpoints, datos JSON, manejo de errores.
+    </p>
+    <div class="hero-actions">
+      <a href="#endpoints" class="btn-primary">Ver endpoints</a>
+      <a href="#pruebas" class="btn-secondary">Probar ahora</a>
+    </div>
+  </div>
+
+  <div class="fade-in">
+    <div class="hero-terminal">
+      <div class="terminal-bar">
+        <span class="t-dot r"></span>
+        <span class="t-dot y"></span>
+        <span class="t-dot g"></span>
+        <span class="terminal-title">api-libros — node app.js</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-prompt">$ </span><span class="t-cmd">curl /api/libros/1</span></div>
+        <div>&nbsp;</div>
+        <div><span class="json-punc">{</span></div>
+        <div>&nbsp;&nbsp;<span class="json-key">"id"</span><span class="json-punc">: </span><span class="json-num">1</span><span class="json-punc">,</span></div>
+        <div>&nbsp;&nbsp;<span class="json-key">"nombre"</span><span class="json-punc">: </span><span class="json-str">"Cien años de soledad"</span><span class="json-punc">,</span></div>
+        <div>&nbsp;&nbsp;<span class="json-key">"anio"</span><span class="json-punc">: </span><span class="json-num">1967</span><span class="json-punc">,</span></div>
+        <div>&nbsp;&nbsp;<span class="json-key">"autor"</span><span class="json-punc">: </span><span class="json-str">"García Márquez"</span></div>
+        <div><span class="json-punc">}</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-prompt">$ </span><span class="t-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div class="stats">
+  <div class="stats-inner">
+    <div class="stat fade-in">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Endpoints</div>
+    </div>
+    <div class="stat fade-in">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Libros</div>
+    </div>
+    <div class="stat fade-in">
+      <div class="stat-num">GET</div>
+      <div class="stat-label">Métodos</div>
+    </div>
+    <div class="stat fade-in">
+      <div class="stat-num">JSON</div>
+      <div class="stat-label">Formato</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<div class="content">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Inicio</div>
+      <ul>
+        <li><a href="#endpoints">Documentación</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Endpoints</div>
+      <ul>
+        <li><a href="#ep-todos"><span class="method-pill">GET</span> Listar todos</a></li>
+        <li><a href="#ep-buscar"><span class="method-pill">GET</span> Buscar nombre</a></li>
+        <li><a href="#ep-id"><span class="method-pill">GET</span> Por ID</a></li>
+      </ul>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Herramientas</div>
+      <ul>
+        <li><a href="#pruebas">Probar en vivo</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main id="endpoints">
+
+    <h2 class="section-title">Endpoints</h2>
+    <p class="section-desc">
+      Todos los endpoints responden con <code style="font-family:var(--mono);font-size:0.85em;background:var(--cream);padding:1px 5px;border-radius:2px">application/json</code>.
+      El servidor corre en el puerto 3000 localmente y en Render en producción.
+    </p>
+
+    <!-- Endpoint 1 -->
+    <div class="endpoint-card" id="ep-todos">
+      <div class="endpoint-header open" onclick="toggleEndpoint(this)">
+        <span class="method-badge">GET</span>
+        <span class="endpoint-path">/api/libros</span>
+        <span class="endpoint-summary">Retorna todos los libros disponibles</span>
+        <span class="endpoint-toggle open">▼</span>
+      </div>
+      <div class="endpoint-body open">
+        <div class="body-grid">
+          <div>
+            <div class="sub-heading">Descripción</div>
+            <p style="font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:1rem">
+              Devuelve el arreglo completo de libros almacenados en memoria.
+              No requiere parámetros. Incluye el total de libros en la respuesta.
+            </p>
+            <div class="sub-heading">Parámetros</div>
+            <p style="font-size:0.82rem;color:var(--muted)">Ninguno requerido.</p>
+            <div style="margin-top:1.2rem">
+              <div class="sub-heading">Respuestas</div>
+              <ul class="response-list">
+                <li><span class="status-code status-200">200</span> <span style="color:var(--muted);font-size:0.82rem">Lista de todos los libros con el total</span></li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="sub-heading">Respuesta de ejemplo</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">JSON</span>
+                <button class="copy-code" onclick="copyCode(this, 'r1')">Copiar</button>
+              </div>
+              <pre id="r1"><span class="json-punc">{</span>
+  <span class="json-key">"total"</span><span class="json-punc">: </span><span class="json-num">5</span><span class="json-punc">,</span>
+  <span class="json-key">"libros"</span><span class="json-punc">: [</span>
+    <span class="json-punc">{</span>
+      <span class="json-key">"id"</span><span class="json-punc">: </span><span class="json-num">1</span><span class="json-punc">,</span>
+      <span class="json-key">"nombre"</span><span class="json-punc">: </span><span class="json-str">"Cien años de soledad"</span><span class="json-punc">,</span>
+      <span class="json-key">"anioPublicacion"</span><span class="json-punc">: </span><span class="json-num">1967</span>
+    <span class="json-punc">}</span>
+  <span class="json-punc">]</span>
+<span class="json-punc">}</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Endpoint 2 -->
+    <div class="endpoint-card" id="ep-buscar">
+      <div class="endpoint-header" onclick="toggleEndpoint(this)">
+        <span class="method-badge">GET</span>
+        <span class="endpoint-path">/api/libros?nombre=<em style="color:var(--accent)">texto</em></span>
+        <span class="endpoint-summary">Busca libros por nombre</span>
+        <span class="endpoint-toggle">▼</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="body-grid">
+          <div>
+            <div class="sub-heading">Descripción</div>
+            <p style="font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:1rem">
+              Filtra libros cuyo nombre contenga el texto buscado.
+              La búsqueda no distingue entre mayúsculas y minúsculas.
+            </p>
+            <div class="sub-heading">Parámetros de consulta</div>
+            <table class="params-table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Tipo</th>
+                  <th>Requerido</th>
+                  <th>Descripción</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>nombre</td>
+                  <td><span class="param-type">string</span></td>
+                  <td><span class="param-req">Sí</span></td>
+                  <td style="font-size:0.8rem;color:var(--muted)">Texto a buscar en el título</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:1.2rem">
+              <div class="sub-heading">Respuestas</div>
+              <ul class="response-list">
+                <li><span class="status-code status-200">200</span> <span style="color:var(--muted);font-size:0.82rem">Libros que coinciden con la búsqueda</span></li>
+                <li><span class="status-code status-404">404</span> <span style="color:var(--muted);font-size:0.82rem">No se encontraron libros con ese nombre</span></li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="sub-heading">Respuesta 200</div>
+            <div class="code-block" style="margin-bottom:0.8rem">
+              <div class="code-header"><span class="code-lang">JSON · 200 OK</span></div>
+              <pre><span class="json-punc">{</span>
+  <span class="json-key">"total"</span><span class="json-punc">: </span><span class="json-num">1</span><span class="json-punc">,</span>
+  <span class="json-key">"libros"</span><span class="json-punc">: [{</span>
+    <span class="json-key">"id"</span><span class="json-punc">: </span><span class="json-num">4</span><span class="json-punc">,</span>
+    <span class="json-key">"nombre"</span><span class="json-punc">: </span><span class="json-str">"1984"</span><span class="json-punc">,</span>
+    <span class="json-key">"autor"</span><span class="json-punc">: </span><span class="json-str">"George Orwell"</span>
+  <span class="json-punc">}]</span>
+<span class="json-punc">}</span></pre>
+            </div>
+            <div class="sub-heading">Respuesta 404</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON · 404 Not Found</span></div>
+              <pre><span class="json-punc">{</span>
+  <span class="json-key">"error"</span><span class="json-punc">: </span><span class="json-bool">true</span><span class="json-punc">,</span>
+  <span class="json-key">"mensaje"</span><span class="json-punc">: </span><span class="json-str">"No se encontraron libros con el nombre: \"xyz\""</span>
+<span class="json-punc">}</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Endpoint 3 -->
+    <div class="endpoint-card" id="ep-id">
+      <div class="endpoint-header" onclick="toggleEndpoint(this)">
+        <span class="method-badge">GET</span>
+        <span class="endpoint-path">/api/libros/<em style="color:var(--accent)">:id</em></span>
+        <span class="endpoint-summary">Obtiene un libro por su ID</span>
+        <span class="endpoint-toggle">▼</span>
+      </div>
+      <div class="endpoint-body">
+        <div class="body-grid">
+          <div>
+            <div class="sub-heading">Descripción</div>
+            <p style="font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:1rem">
+              Ruta dinámica. El segmento <code style="font-family:var(--mono);font-size:0.85em;background:var(--cream);padding:1px 4px">:id</code> es reemplazado por el número del libro que deseas obtener.
+            </p>
+            <div class="sub-heading">Parámetros de ruta</div>
+            <table class="params-table">
+              <thead>
+                <tr><th>Nombre</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>id</td>
+                  <td><span class="param-type">integer</span></td>
+                  <td><span class="param-req">Sí</span></td>
+                  <td style="font-size:0.8rem;color:var(--muted)">ID numérico del libro (1–5)</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:1.2rem">
+              <div class="sub-heading">Respuestas</div>
+              <ul class="response-list">
+                <li><span class="status-code status-200">200</span> <span style="color:var(--muted);font-size:0.82rem">Objeto del libro encontrado</span></li>
+                <li><span class="status-code status-400">400</span> <span style="color:var(--muted);font-size:0.82rem">El ID no es un número válido</span></li>
+                <li><span class="status-code status-404">404</span> <span style="color:var(--muted);font-size:0.82rem">No existe un libro con ese ID</span></li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="sub-heading">Respuesta 200</div>
+            <div class="code-block" style="margin-bottom:0.8rem">
+              <div class="code-header"><span class="code-lang">JSON · 200 OK</span></div>
+              <pre><span class="json-punc">{</span>
+  <span class="json-key">"id"</span><span class="json-punc">: </span><span class="json-num">3</span><span class="json-punc">,</span>
+  <span class="json-key">"nombre"</span><span class="json-punc">: </span><span class="json-str">"El principito"</span><span class="json-punc">,</span>
+  <span class="json-key">"anioPublicacion"</span><span class="json-punc">: </span><span class="json-num">1943</span><span class="json-punc">,</span>
+  <span class="json-key">"autor"</span><span class="json-punc">: </span><span class="json-str">"Antoine de Saint-Exupéry"</span><span class="json-punc">,</span>
+  <span class="json-key">"genero"</span><span class="json-punc">: </span><span class="json-str">"Fábula"</span>
+<span class="json-punc">}</span></pre>
+            </div>
+            <div class="sub-heading">Respuesta 400</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON · 400 Bad Request</span></div>
+              <pre><span class="json-punc">{</span>
+  <span class="json-key">"error"</span><span class="json-punc">: </span><span class="json-bool">true</span><span class="json-punc">,</span>
+  <span class="json-key">"mensaje"</span><span class="json-punc">: </span><span class="json-str">"El parámetro id debe ser un número entero válido."</span>
+<span class="json-punc">}</span></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRY IT -->
+    <div class="try-section" id="pruebas">
+      <div class="try-title">Probar en vivo</div>
+      <p class="try-desc">
+        Ingresa la URL completa de tu API (local o de Render) y prueba directamente desde aquí.
+      </p>
+      <div class="try-form">
+        <input
+          class="try-input"
+          id="tryUrl"
+          type="text"
+          placeholder="https://tu-api.onrender.com/api/libros"
+          value="http://localhost:3000/api/libros"
+        />
+        <button class="try-btn" onclick="sendRequest()">Enviar</button>
+      </div>
+      <div class="try-quick">
+        <span style="font-size:0.7rem;color:#555;align-self:center;font-family:var(--mono)">Rutas rápidas:</span>
+        <button class="quick-btn" onclick="setUrl('/api/libros')">/api/libros</button>
+        <button class="quick-btn" onclick="setUrl('/api/libros?nombre=1984')">/api/libros?nombre=1984</button>
+        <button class="quick-btn" onclick="setUrl('/api/libros/1')">/api/libros/1</button>
+        <button class="quick-btn" onclick="setUrl('/api/libros/99')">/api/libros/99</button>
+        <button class="quick-btn" onclick="setUrl('/api/libros/abc')">/api/libros/abc</button>
+      </div>
+      <div class="try-result" id="tryResult">
+        <div class="result-header">
+          <span id="resultLabel">Respuesta</span>
+          <span class="result-status" id="resultStatus"></span>
+        </div>
+        <pre id="resultBody" style="padding:1rem 1.2rem;font-family:var(--mono);font-size:0.78rem;line-height:1.8;color:#abb2bf;overflow-x:auto;margin:0;max-height:320px;overflow-y:auto"></pre>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">API de Libros</div>
+      <div class="footer-text">Ingeniería de Software I · Universidad Gerardo Barrios</div>
+    </div>
+    <div class="footer-tech">
+      <span class="tech-tag">Node.js</span>
+      <span class="tech-tag">Express</span>
+      <span class="tech-tag">REST</span>
+      <span class="tech-tag">JSON</span>
+      <span class="tech-tag">Render</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleEndpoint(header) {
+    const body = header.nextElementSibling;
+    const toggle = header.querySelector('.endpoint-toggle');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    header.classList.toggle('open', !isOpen);
+    toggle.classList.toggle('open', !isOpen);
+  }
+
+  function copyCode(btn, id) {
+    const el = document.getElementById(id);
+    navigator.clipboard.writeText(el.innerText).then(() => {
+      btn.textContent = '¡Copiado!';
+      setTimeout(() => btn.textContent = 'Copiar', 1500);
+    });
+  }
+
+  function getBase() {
+    const val = document.getElementById('tryUrl').value.trim();
+    const match = val.match(/^(https?:\/\/[^\/]+)/);
+    return match ? match[1] : 'http://localhost:3000';
+  }
+
+  function setUrl(path) {
+    const base = getBase();
+    document.getElementById('tryUrl').value = base + path;
+  }
+
+  async function sendRequest() {
+    const url = document.getElementById('tryUrl').value.trim();
+    const resultBox = document.getElementById('tryResult');
+    const resultBody = document.getElementById('resultBody');
+    const resultStatus = document.getElementById('resultStatus');
+    const resultLabel = document.getElementById('resultLabel');
+
+    resultBody.textContent = 'Enviando petición...';
+    resultBox.classList.add('show');
+    resultStatus.textContent = '';
+    resultStatus.style.background = '';
+    resultStatus.style.color = '';
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const code = res.status;
+      resultStatus.textContent = code + ' ' + res.statusText;
+      if (code === 200) {
+        resultStatus.style.background = '#d8f3dc'; resultStatus.style.color = '#2d6a4f';
+      } else if (code === 404) {
+        resultStatus.style.background = '#fce8e6'; resultStatus.style.color = '#c84b2f';
+      } else {
+        resultStatus.style.background = '#fff3cd'; resultStatus.style.color = '#856404';
+      }
+      resultStatus.style.padding = '2px 8px';
+      resultStatus.style.borderRadius = '2px';
+      resultStatus.style.fontFamily = 'var(--mono)';
+      resultStatus.style.fontSize = '0.7rem';
+      resultLabel.textContent = 'GET ' + new URL(url).pathname + new URL(url).search;
+      resultBody.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+      resultBody.textContent = '⚠ No se pudo conectar.\n\nVerifica que el servidor esté corriendo en esa URL.\n\nError: ' + err.message;
+      resultStatus.textContent = 'Error de red';
+      resultStatus.style.background = '#fce8e6';
+      resultStatus.style.color = '#c84b2f';
+    }
+  }
+
+  document.getElementById('tryUrl').addEventListener('keydown', e => {
+    if (e.key === 'Enter') sendRequest();
+  });
+</script>
+
+</body>
+</html>
