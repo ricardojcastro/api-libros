@@ -1,0 +1,23 @@
+{
+  "name": "api-libros",
+  "version": "1.0.0",
+  "description": "API REST de Libros con Node.js y Express — Ingeniería de Software I UGB",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.22.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "author": "Ricardo",
+  "license": "MIT",
+  "keywords": [],
+  "type": "commonjs"
+}
